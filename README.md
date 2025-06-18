@@ -114,8 +114,8 @@ Files are saved as:
 
 ```
 <output_dir>/<domain>/<filter_mode>/
-  ├── 001_example_com_main_f3ab23d4.js
-  ├── 002_example_com_inline_1a2b3c4d.js
+  ├── example_com_main_f3ab23d4.js
+  ├── example_com_inline_1a2b3c4d.js
   ├── ...
   └── verbose.log
 ```
