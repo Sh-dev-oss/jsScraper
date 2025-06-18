@@ -147,14 +147,6 @@ Custom patterns can be added to `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_
 
 ---
 
-## 🛠 Development Tips
-
-* Playwright automation is async: `asyncio.run(...)` powers the engine
-* Logging is modular, and you can attach your own handlers
-* Filtering patterns use Python `re` (regex)
-
----
-
 ## 📦 requirements.txt
 
 ```txt
