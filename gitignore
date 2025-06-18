@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Playwright-related
+playwright/.cache/
+playwright-report/
+.trace/
+test-results/
+
+# Output & logs
+getJsOutput/
+*.log
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# VSCode config
+.vscode/
+
+# macOS
+.DS_Store
+
+# Python environment files
+*.env
+*.egg-info/
+.eggs/
