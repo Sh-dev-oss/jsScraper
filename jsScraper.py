@@ -8,6 +8,9 @@
 # =============================================================================
 
 #!/usr/bin/env python3
+# --------------------------
+# Imports
+# --------------------------
 import asyncio
 import re
 import argparse
@@ -56,6 +59,7 @@ log = logging.getLogger(__name__)
 def is_interesting_js(url: str, uninteresting_patterns) -> bool:
     """
     Returns True if the JS file URL does not match any uninteresting patterns.
+    Used to filter out common libraries and analytics scripts.
     """
     lower_url = url.lower()
     return not any(re.search(pattern, lower_url) for pattern in uninteresting_patterns)
@@ -63,11 +67,16 @@ def is_interesting_js(url: str, uninteresting_patterns) -> bool:
 def is_interesting_inline_script(content: str, uninteresting_patterns) -> bool:
     """
     Returns True if the inline script content does not match any uninteresting patterns.
+    Used to filter out uninteresting inline scripts.
     """
     lower_content = content.lower()
     return not any(re.search(pattern, lower_content) for pattern in uninteresting_patterns)
 
 def sanitize_filename_part(text: str) -> str:
+    """
+    Sanitizes a string to be used as part of a filename.
+    Replaces forbidden characters and trims underscores.
+    """
     # Replace only forbidden filename characters, keep underscores and dashes
     text = re.sub(r'[<>:"/\\|?*\']', '_', text)
     text = re.sub(r'_+', '_', text)
@@ -76,6 +85,7 @@ def sanitize_filename_part(text: str) -> str:
 def build_filename(url: str, content: bytes) -> str:
     """
     Builds a unique filename for a JS file based on its URL and content hash.
+    Ensures filename is safe and not too long for the filesystem.
     """
     parsed = urlparse(url)
     host = sanitize_filename_part(parsed.netloc)
@@ -92,6 +102,7 @@ def build_filename(url: str, content: bytes) -> str:
 def get_domain_from_url(url: str) -> str:
     """
     Extracts the domain from a URL.
+    Used for organizing output directories and filtering.
     """
     parsed = urlparse(url)
     domain = parsed.netloc or parsed.path
@@ -100,6 +111,7 @@ def get_domain_from_url(url: str) -> str:
 async def extract_inline_scripts(page):
     """
     Extracts all inline <script> tags from the page's HTML.
+    Returns a list of script contents.
     """
     try:
         html = await page.content()
@@ -112,6 +124,7 @@ async def extract_inline_scripts(page):
 async def setup_browser():
     """
     Launches a headless Chromium browser using Playwright and returns the browser context and page.
+    Sets user agent and viewport for more realistic browsing.
     """
     playwright = await async_playwright().start()
     browser = await playwright.chromium.launch(headless=True)
@@ -125,6 +138,7 @@ async def setup_browser():
 def collect_js_urls(page, output_dir, hash_set, uninteresting_patterns, include_cross_origin, min_size, verbose, skipped_counters, domain):
     """
     Registers a Playwright event handler to collect and save interesting JS files as they are loaded.
+    Handles deduplication, filtering, and file saving.
     """
     async def on_response(response):
         # Only process script, fetch, or xhr resources
@@ -160,6 +174,7 @@ def collect_js_urls(page, output_dir, hash_set, uninteresting_patterns, include_
 async def process_inline_scripts(inline_scripts, js_responses_len, output_dir, hash_set, min_size, uninteresting_patterns, domain, verbose, skipped_counters):
     """
     Processes and saves eligible inline scripts from the page.
+    Handles deduplication, filtering, and file saving.
     """
     inline_count = 0
     for script in inline_scripts:
@@ -206,7 +221,7 @@ async def download_js_files(target_url: str, output_root: str, filter_mode: str 
 
     # Set up verbose logging if requested
     if verbose:
-        log.setLevel(logging.DEBUG)
+        # Add file handler for verbose logging
         handler = logging.FileHandler(str(output_dir / 'verbose.log'))
         handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         log.addHandler(handler)
@@ -249,18 +264,22 @@ Clear Output Dir:   {'Enabled' if clear_output else 'Disabled'}
 
             scaled_timeout = int(timeout)
             try:
+                # Navigate to the target URL and wait for network to settle
                 await page.goto(target_url, wait_until="networkidle", timeout=scaled_timeout)
                 await page.wait_for_timeout(10000)  # Wait for network to settle
             except Exception as e:
+                # Handle navigation errors gracefully
                 log.warning(f"⚠️ Navigation issue: {e}. Continuing with collected responses.")
                 errors.append(f"Initial navigation error: {e}")
 
-            await page.mouse.wheel(0, 2000)  # Scroll down to trigger lazy loading
+            # Scroll to trigger lazy loading of scripts
+            await page.mouse.wheel(0, 2000)
             await page.wait_for_timeout(2000)
 
             def normalize_url(url):
                 """
                 Normalizes a URL for consistent comparison (removes www, lowercases, strips trailing slash).
+                Used for deduplication during crawling.
                 """
                 parsed = urlparse(url)
                 netloc = parsed.netloc.lower()
@@ -273,6 +292,7 @@ Clear Output Dir:   {'Enabled' if clear_output else 'Disabled'}
             async def crawl_links(context, current_url, max_depth=1, visited=None):
                 """
                 Recursively crawls internal links up to max_depth, collecting JS files from each page.
+                Avoids revisiting the same URLs.
                 """
                 if not crawl:
                     return
@@ -341,6 +361,7 @@ Elapsed time: {duration:.2f} seconds
             if errors:
                 log_info_block(f"⚠️ Total errors: {len(errors)}\n" + "\n".join(errors))
         finally:
+            # Ensure browser and Playwright are closed properly
             if browser:
                 await browser.close()
             if playwright:
@@ -366,6 +387,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download and archive JavaScript files (external and inline) from a target URL using Playwright. Supports filtering, crawling, deduplication, and advanced output options."
     )
+    # --------------------------
+    # CLI Arguments
+    # --------------------------
     parser.add_argument(
         "url",
         nargs="?",
@@ -436,6 +460,7 @@ if __name__ == "__main__":
     # Determine URLs to process (from file or CLI argument)
     urls = []
     if args.url_file:
+        # Read URLs from file, skipping comments and blank lines
         url_file_path = Path(args.url_file)
         if not url_file_path.exists():
             log.error(f"❌ URL file not found: {args.url_file}")
@@ -483,6 +508,7 @@ if __name__ == "__main__":
         except ConnectionRefusedError:
             log.error(f"❌ Connection refused: The server at {url} actively refused the connection.")
         except Exception as e:
+            # Handle common HTTP and connection errors with user-friendly messages
             if "403" in str(e):
                 log.error(f"❌ Access forbidden (HTTP 403): The server at {url} denied access. The site may have protection against scraping.")
             elif "404" in str(e):
@@ -496,7 +522,7 @@ if __name__ == "__main__":
             else:
                 log.error(f"❌ Error processing {url}: {str(e)}")
             
-            # Print more helpful troubleshooting info
+            # Print more helpful troubleshooting info if verbose
             if args.verbose:
                 import traceback
                 log.debug("Detailed error information:")
