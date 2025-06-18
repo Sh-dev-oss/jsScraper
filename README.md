@@ -170,14 +170,21 @@ beautifulsoup4
 
 ## 🤝 Contributing
 
-Pull requests and feature requests are welcome!
+Contributions are welcome — whether it's a feature idea, bug fix, optimization, or doc update!
 
-Ideas:
+### 🚀 Ways to Contribute
 
-* Plugin engine (e.g., secrets detection)
-* JS beautification/deobfuscation
-* JSON summary report
-* Docker wrapper
+- Open a pull request with your improvements
+- Create an issue for bug reports or suggestions
+- Discuss new ideas via issues or discussions
+
+### 💡 Feature Ideas (Open for Contribution)
+
+- 🔍 Plugin engine (e.g., secrets detection, URL extraction, JS analysis)
+- 🎨 JS beautification / deobfuscation support
+- 📊 JSON-based summary reports
+- 🐳 Docker wrapper for easy deployment
+
 
 ---
 
