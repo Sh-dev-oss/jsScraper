@@ -22,7 +22,6 @@
 | 🏁 Cross-Origin Capture   | Optionally includes third-party JavaScript                |
 | 🩵 Logging                | Clean console output & full logs in `verbose.log`         |
 | 🧪 Batch Mode             | Accepts URL lists for bulk scraping                       |
-| 🔐 Privacy-Aware          | Skips known sensitive or privacy-invasive patterns        |
 
 ---
 
