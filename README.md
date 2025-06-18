@@ -8,12 +8,12 @@
 
 **jsScraper** allows you to scan web pages for JavaScript files — both external and inline — and archive them with options to:
 
-- Filter out common libraries and tracking scripts
-- Deduplicate using SHA-256 hashes
-- Crawl internal pages
-- Collect cross-origin resources (optional)
-- Generate verbose output logs
-- Process entire URL lists
+* Filter out common libraries and tracking scripts
+* Deduplicate using SHA-256 hashes
+* Crawl internal pages
+* Collect cross-origin resources (optional)
+* Generate verbose output logs
+* Process entire URL lists
 
 Its powerful combination of **asynchronous scraping**, **Playwright automation**, and **smart filtering** makes it suitable for recon, compliance, forensics, and competitive intelligence.
 
@@ -21,31 +21,33 @@ Its powerful combination of **asynchronous scraping**, **Playwright automation**
 
 ## ⚙️ Features
 
-| Feature                  | Description                                                                 |
-|--------------------------|-----------------------------------------------------------------------------|
-| 📂 External JS Collection | Captures all loaded `.js` files on target page                              |
-| 🧠 Inline Script Parsing  | Extracts `<script>` blocks from HTML content                                |
-| ✂️ Filtering Engine       | Removes tracking scripts, analytics, and known libraries using regex        |
-| 🔄 Deduplication          | Saves only unique scripts based on SHA-256 hash                             |
-| 🌐 Crawling               | Optional crawling of internal links up to specified depth                   |
-| 🏁 Cross-Origin Capture   | Capture JS from third-party domains if required                             |
-| 🪵 Logging                | Verbose log file (`verbose.log`) and clean CLI logging                      |
-| 🧪 Batch Mode             | Accepts a list of target URLs from file                                     |
-| 🔐 Privacy-Aware          | Skips sensitive patterns & analytics tools (e.g., GA, Segment, Hotjar)      |
+| Feature                   | Description                                                            |
+| ------------------------- | ---------------------------------------------------------------------- |
+| 📂 External JS Collection | Captures all loaded `.js` files on target page                         |
+| 🧠 Inline Script Parsing  | Extracts `<script>` blocks from HTML content                           |
+| ✂️ Filtering Engine       | Removes tracking scripts, analytics, and known libraries using regex   |
+| 🔄 Deduplication          | Saves only unique scripts based on SHA-256 hash                        |
+| 🌐 Crawling               | Optional crawling of internal links up to specified depth              |
+| 🏁 Cross-Origin Capture   | Capture JS from third-party domains if required                        |
+| 🪵 Logging                | Verbose log file (`verbose.log`) and clean CLI logging                 |
+| 🧪 Batch Mode             | Accepts a list of target URLs from file                                |
 
 ---
 
 ## 🧰 Requirements
 
-- Python 3.8+
-- Dependencies:
-  - `playwright`
-  - `validators`
-  - `beautifulsoup4`
+* Python 3.8+
+* Dependencies:
 
-### Installation
+  * `playwright`
+  * `validators`
+  * `beautifulsoup4`
+
+### 🔧 Setup Instructions
 
 ```bash
+git clone https://github.com/exe249/jsScraper.git
+cd jsScraper
 pip install -r requirements.txt
 playwright install
 ```
@@ -115,7 +117,6 @@ Files are saved as:
 
 Each JS file is uniquely named using:
 
-* Index
 * Domain
 * Path
 * Content hash (SHA-256, first 8 chars)
@@ -129,7 +130,6 @@ Each JS file is uniquely named using:
 * Extract inline secrets, endpoints, or tokens
 * Identify outdated/vulnerable JS libraries
 * Use in bug bounty / recon workflows
-
 
 ### 🧾 Web Archiving / Forensics
 
