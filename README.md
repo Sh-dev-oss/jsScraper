@@ -178,4 +178,4 @@ Ideas:
 
 ## 👨‍💻 Author
 
-Developed by **[Omer](https://github.com/exe249)** — built for recon professionals, security analysts, and digital investigators.
+Developed by **[249BUG](https://github.com/exe249)** — built for recon professionals, security analysts, and digital investigators.
