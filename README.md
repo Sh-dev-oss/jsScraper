@@ -48,3 +48,151 @@ Its powerful combination of **asynchronous scraping**, **Playwright automation**
 ```bash
 pip install -r requirements.txt
 playwright install
+```
+
+---
+
+## 🧪 Usage Examples
+
+### 📄 Basic Usage
+
+```bash
+python jsScraper.py https://example.com
+```
+
+### 🔁 From URL File
+
+```bash
+python jsScraper.py --url-file urls.txt
+```
+
+### ⚙️ Full Options
+
+```bash
+python jsScraper.py https://example.com \
+  --output output_dir \
+  --filter strict \
+  --min-size 200 \
+  --crawl \
+  --max-depth 2 \
+  --cross-origin \
+  --clear \
+  --verbose
+```
+
+---
+
+## 🧾 CLI Arguments
+
+| Argument         | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `url`            | Target website to scrape (e.g., [https://site.com](https://site.com)) |
+| `--url-file`     | Path to file with list of URLs (overrides `url`)                      |
+| `-o, --output`   | Output directory (default: `getJsOutput`)                             |
+| `--filter`       | Filtering mode: `strict` (default) or `relaxed`                       |
+| `--min-size`     | Minimum file size in bytes (default: 150)                             |
+| `--crawl`        | Enable crawling of internal links                                     |
+| `--max-depth`    | Max depth for crawling (default: 2)                                   |
+| `--cross-origin` | Include third-party JS (e.g., from CDNs)                              |
+| `--clear`        | Clear output folder before writing new data                           |
+| `-t, --timeout`  | Page timeout in seconds (default: 60)                                 |
+| `-r, --delay`    | Delay between downloads in seconds (default: 0.5)                     |
+| `-v, --verbose`  | Enable verbose logging (saved to `verbose.log`)                       |
+
+---
+
+## 📁 Output Structure
+
+Files are saved as:
+
+```
+<output_dir>/<domain>/<filter_mode>/
+  ├── 001_example_com_main_f3ab23d4.js
+  ├── 002_example_com_inline_1a2b3c4d.js
+  ├── ...
+  └── verbose.log
+```
+
+Each JS file is uniquely named using:
+
+* Index
+* Domain
+* Path
+* Content hash (SHA-256, first 8 chars)
+
+---
+
+## 🧠 Use Cases
+
+### 🔐 Security Research
+
+* Extract inline secrets, endpoints, or tokens
+* Identify outdated/vulnerable JS libraries
+* Use in bug bounty / recon workflows
+
+### 🎯 Compliance & Auditing
+
+* Check for trackers violating user consent (e.g., GDPR, CCPA)
+* Analyze JS fingerprinting behavior
+
+### 🕵️ Competitive Analysis
+
+* Analyze competitor website scripts
+* Track third-party services used
+
+### 🧾 Web Archiving / Forensics
+
+* Archive all JS on a domain for future analysis
+* Identify scripts used in past attacks or shady behavior
+
+---
+
+## 📋 Filtering Modes
+
+* **strict**: Blocks most common analytics, CDNs, libraries
+* **relaxed**: Allows more JS through; fewer false negatives
+
+Custom patterns can be added to `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_RELAXED` in the script.
+
+---
+
+## 🛠 Development Tips
+
+* Playwright automation is async: `asyncio.run(...)` powers the engine
+* Logging is modular, and you can attach your own handlers
+* Filtering patterns use Python `re` (regex)
+
+---
+
+## 📦 requirements.txt
+
+```txt
+playwright
+validators
+beautifulsoup4
+```
+
+---
+
+## 🛡 License
+
+**MIT License** — Free to use, modify, and redistribute. See `LICENSE` for details.
+
+---
+
+## 🤝 Contributing
+
+Pull requests and feature requests are welcome!
+
+Ideas:
+
+* Plugin engine (e.g., secrets detection)
+* JS beautification/deobfuscation
+* JSON summary report
+* Docker wrapper
+
+---
+
+## 👨‍💻 Author
+
+Developed by **[Omer](https://github.com/exe249)** — built for recon professionals, security analysts, and digital investigators.
