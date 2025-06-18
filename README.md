@@ -1,4 +1,9 @@
 # jsScraper
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Repo Size](https://img.shields.io/github/repo-size/exe249/jsScraper)
+![Last Commit](https://img.shields.io/github/last-commit/exe249/jsScraper)
+![Issues](https://img.shields.io/github/issues/exe249/jsScraper)
 
 > 🔍 A comprehensive, Python-based JavaScript scraping and archiving tool built on Playwright. Designed for security researchers, bug bounty hunters, developers, and analysts to extract, filter, and save JavaScript files (external & inline) from any target website.
 
