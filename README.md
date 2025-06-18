@@ -117,7 +117,6 @@ Files are saved as:
 
 Each JS file is uniquely named using:
 
-* Index
 * Domain
 * Path
 * Content hash (SHA-256, first 8 chars)
