@@ -1,45 +1,53 @@
 # jsScraper
 
-> 🔍 A powerful Python-based tool to extract, filter, and archive JavaScript files (external & inline) from websites. Designed for bug bounty hunters, security researchers, and digital analysts.
+> 🔍 A comprehensive, Python-based JavaScript scraping and archiving tool built on Playwright. Designed for security researchers, bug bounty hunters, developers, and analysts to extract, filter, and save JavaScript files (external & inline) from any target website.
 
 ---
 
 ## 🚀 Overview
 
-**jsScraper** automates the process of collecting and analyzing JavaScript files from websites using **Playwright** and **asynchronous scraping**. It supports inline and external JS extraction, filtering of known libraries, crawling, cross-origin detection, deduplication, and verbose logging.
+**jsScraper** allows you to scan web pages for JavaScript files — both external and inline — and archive them with options to:
+
+* Filter out common libraries and tracking scripts
+* Deduplicate using SHA-256 hashes
+* Crawl internal pages
+* Collect cross-origin resources (optional)
+* Generate verbose output logs
+* Process entire URL lists
+
+Its powerful combination of **asynchronous scraping**, **Playwright automation**, and **smart filtering** makes it suitable for recon, compliance, forensics, and competitive intelligence.
 
 ---
 
 ## ⚙️ Features
 
-| Feature                   | Description                                               |
-| ------------------------- | --------------------------------------------------------- |
-| 📂 External JS Collection | Downloads all loaded `.js` files on a page                |
-| 🧠 Inline Script Parsing  | Extracts inline `<script>` tags from HTML                 |
-| ✂️ Filtering Engine       | Removes common tracking/analytics and libraries via regex |
-| 🔄 Deduplication          | Avoids saving duplicate scripts using SHA-256 hash        |
-| 🌐 Crawling               | Follows internal links up to a defined depth              |
-| 🏁 Cross-Origin Capture   | Optionally includes third-party JavaScript                |
-| 🩵 Logging                | Clean console output & full logs in `verbose.log`         |
-| 🧪 Batch Mode             | Accepts URL lists for bulk scraping                       |
+| Feature                   | Description                                                            |
+| ------------------------- | ---------------------------------------------------------------------- |
+| 📂 External JS Collection | Captures all loaded `.js` files on target page                         |
+| 🧠 Inline Script Parsing  | Extracts `<script>` blocks from HTML content                           |
+| ✂️ Filtering Engine       | Removes tracking scripts, analytics, and known libraries using regex   |
+| 🔄 Deduplication          | Saves only unique scripts based on SHA-256 hash                        |
+| 🌐 Crawling               | Optional crawling of internal links up to specified depth              |
+| 🏁 Cross-Origin Capture   | Capture JS from third-party domains if required                        |
+| 🪵 Logging                | Verbose log file (`verbose.log`) and clean CLI logging                 |
+| 🧪 Batch Mode             | Accepts a list of target URLs from file                                |
 
 ---
 
-## 🛠️ Requirements
+## 🧰 Requirements
 
 * Python 3.8+
+* Dependencies:
 
-### Dependencies
+  * `playwright`
+  * `validators`
+  * `beautifulsoup4`
 
-```txt
-playwright
-validators
-beautifulsoup4
-```
-
-Install with:
+### 🔧 Setup Instructions
 
 ```bash
+git clone https://github.com/exe249/jsScraper.git
+cd jsScraper
 pip install -r requirements.txt
 playwright install
 ```
@@ -54,13 +62,13 @@ playwright install
 python jsScraper.py https://example.com
 ```
 
-### ⟲ Batch Mode
+### 🔁 From URL File
 
 ```bash
 python jsScraper.py --url-file urls.txt
 ```
 
-### ⚙️ Full Configuration
+### ⚙️ Full Options
 
 ```bash
 python jsScraper.py https://example.com \
@@ -76,66 +84,67 @@ python jsScraper.py https://example.com \
 
 ---
 
-## 🗒 CLI Options
+## 🧾 CLI Arguments
 
-| Argument         | Description                                    |
-| ---------------- | ---------------------------------------------- |
-| `url`            | Target site (e.g., `https://site.com`)         |
-| `--url-file`     | Path to file with list of targets              |
-| `-o, --output`   | Output directory (default: `getJsOutput`)      |
-| `--filter`       | `strict` (default) or `relaxed` JS filtering   |
-| `--min-size`     | Minimum script size in bytes (default: 150)    |
-| `--crawl`        | Enable internal link crawling                  |
-| `--max-depth`    | Crawl depth (default: 2)                       |
-| `--cross-origin` | Include third-party JS                         |
-| `--clear`        | Clear output directory before execution        |
-| `-t, --timeout`  | Page timeout in seconds (default: 60)          |
-| `-r, --delay`    | Delay between downloads (default: 0.5s)        |
-| `-v, --verbose`  | Log detailed scraping process to `verbose.log` |
+| Argument         | Description                                                           |
+| ---------------- | --------------------------------------------------------------------- |
+| `url`            | Target website to scrape (e.g., [https://site.com](https://site.com)) |
+| `--url-file`     | Path to file with list of URLs (overrides `url`)                      |
+| `-o, --output`   | Output directory (default: `getJsOutput`)                             |
+| `--filter`       | Filtering mode: `strict` (default) or `relaxed`                       |
+| `--min-size`     | Minimum file size in bytes (default: 150)                             |
+| `--crawl`        | Enable crawling of internal links                                     |
+| `--max-depth`    | Max depth for crawling (default: 2)                                   |
+| `--cross-origin` | Include third-party JS                                                |
+| `--clear`        | Clear output folder before writing new data                           |
+| `-t, --timeout`  | Page timeout in seconds (default: 60)                                 |
+| `-r, --delay`    | Delay between downloads in seconds (default: 0.5)                     |
+| `-v, --verbose`  | Enable verbose logging (saved to `verbose.log`)                       |
 
 ---
 
 ## 📁 Output Structure
 
-Scripts are saved under:
+Files are saved as:
 
 ```
 <output_dir>/<domain>/<filter_mode>/
   ├── 001_example_com_main_f3ab23d4.js
   ├── 002_example_com_inline_1a2b3c4d.js
+  ├── ...
   └── verbose.log
 ```
 
-Each file is named using:
+Each JS file is uniquely named using:
 
 * Index
 * Domain
-* Path type (main/inline)
+* Path
 * Content hash (SHA-256, first 8 chars)
 
 ---
 
-## 🧐 Use Cases
+## 🧠 Use Cases
 
 ### 🔐 Security Research
 
-* Find hardcoded secrets or API endpoints
-* Identify old/vulnerable JS libraries
-* Enhance bug bounty and recon workflows
+* Extract inline secrets, endpoints, or tokens
+* Identify outdated/vulnerable JS libraries
+* Use in bug bounty / recon workflows
 
-### 📏 Forensics / Web Archiving
+### 🧾 Web Archiving / Forensics
 
-* Capture JavaScript snapshots from any point in time
-* Investigate suspicious scripts used in past attacks
+* Archive all JS on a domain for future analysis
+* Identify scripts used in past attacks or shady behavior
 
 ---
 
-## 📊 Filtering Modes
+## 📋 Filtering Modes
 
-* **strict**: Filters out analytics, libraries, known CDNs
-* **relaxed**: Allows more scripts through (e.g., UI plugins)
+* **strict**: Blocks most common analytics, CDNs, libraries
+* **relaxed**: Allows more JS through (themes, plugins, etc)
 
-> You can customize patterns in `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_RELAXED` inside the code.
+Custom patterns can be added to `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_RELAXED` in the script.
 
 ---
 
@@ -151,23 +160,23 @@ beautifulsoup4
 
 ## 🛡 License
 
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+**MIT License** — Free to use, modify, and redistribute. See `LICENSE` for details.
 
 ---
 
 ## 🤝 Contributing
 
-Your ideas and pull requests are welcome!
+Pull requests and feature requests are welcome!
 
-Planned ideas:
+Ideas:
 
-* Secrets detection plugin
-* JavaScript beautifier / deobfuscator
-* JSON summary reporting
-* Docker container support
+* Plugin engine (e.g., secrets detection)
+* JS beautification/deobfuscation
+* JSON summary report
+* Docker wrapper
 
 ---
 
 ## 👨‍💻 Author
 
-Built with ❤️ by [249BUG](https://github.com/exe249) for security professionals and researchers.
+Developed by **[249BUG](https://github.com/exe249)** — built for recon professionals, security analysts, and digital investigators.
