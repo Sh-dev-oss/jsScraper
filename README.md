@@ -93,7 +93,7 @@ python jsScraper.py https://example.com \
 | `--min-size`     | Minimum file size in bytes (default: 150)                             |
 | `--crawl`        | Enable crawling of internal links                                     |
 | `--max-depth`    | Max depth for crawling (default: 2)                                   |
-| `--cross-origin` | Include third-party JS (e.g., from CDNs)                              |
+| `--cross-origin` | Include third-party JS                                                |
 | `--clear`        | Clear output folder before writing new data                           |
 | `-t, --timeout`  | Page timeout in seconds (default: 60)                                 |
 | `-r, --delay`    | Delay between downloads in seconds (default: 0.5)                     |
@@ -130,15 +130,6 @@ Each JS file is uniquely named using:
 * Identify outdated/vulnerable JS libraries
 * Use in bug bounty / recon workflows
 
-### 🎯 Compliance & Auditing
-
-* Check for trackers violating user consent (e.g., GDPR, CCPA)
-* Analyze JS fingerprinting behavior
-
-### 🕵️ Competitive Analysis
-
-* Analyze competitor website scripts
-* Track third-party services used
 
 ### 🧾 Web Archiving / Forensics
 
@@ -150,7 +141,7 @@ Each JS file is uniquely named using:
 ## 📋 Filtering Modes
 
 * **strict**: Blocks most common analytics, CDNs, libraries
-* **relaxed**: Allows more JS through; fewer false negatives
+* **relaxed**: Allows more JS through (themes, plugins, etc)
 
 Custom patterns can be added to `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_RELAXED` in the script.
 
