@@ -13,7 +13,6 @@ import re
 import argparse
 import hashlib
 import logging
-import random
 import shutil
 from pathlib import Path
 from urllib.parse import urlparse, urljoin
@@ -68,23 +67,27 @@ def is_interesting_inline_script(content: str, uninteresting_patterns) -> bool:
     lower_content = content.lower()
     return not any(re.search(pattern, lower_content) for pattern in uninteresting_patterns)
 
-def sanitize_filename_part(text: str, max_length: int = 60) -> str:
-    """
-    Sanitizes a string to be used as part of a filename.
-    """
-    text = re.sub(r'[^\w\-]', '_', text)
-    return re.sub(r'_+', '_', text)[:max_length].strip('_')
+def sanitize_filename_part(text: str) -> str:
+    # Replace only forbidden filename characters, keep underscores and dashes
+    text = re.sub(r'[<>:"/\\|?*\']', '_', text)
+    text = re.sub(r'_+', '_', text)
+    return text.strip('_')
 
-def build_filename(idx: int, url: str, content: bytes) -> str:
+def build_filename(url: str, content: bytes) -> str:
     """
-    Builds a unique filename for a JS file based on its index, URL, and content hash.
+    Builds a unique filename for a JS file based on its URL and content hash.
     """
     parsed = urlparse(url)
     host = sanitize_filename_part(parsed.netloc)
-    path = sanitize_filename_part(parsed.path or 'file')
+    # Remove leading slash and extension from path, keep as much as possible
+    path = parsed.path.lstrip('/')
+    if path.endswith('.js'):
+        path = path[:-3]
+    path = sanitize_filename_part(path)
     hash_prefix = hashlib.sha256(content).hexdigest()[:8]
-    filename = f"{idx:03d}_{host}_{path}_{hash_prefix}.js"
-    return filename[:100]
+    filename = f"{host}_{path}_{hash_prefix}.js"
+    # Truncate only if filename is too long for Windows (max 255 chars)
+    return filename
 
 def get_domain_from_url(url: str) -> str:
     """
@@ -123,8 +126,6 @@ def collect_js_urls(page, output_dir, hash_set, uninteresting_patterns, include_
     """
     Registers a Playwright event handler to collect and save interesting JS files as they are loaded.
     """
-    idx_counter = {"idx": 1}  # mutable counter for filenames
-
     async def on_response(response):
         # Only process script, fetch, or xhr resources
         if response.request.resource_type in ["script", "fetch", "xhr"]:
@@ -144,15 +145,12 @@ def collect_js_urls(page, output_dir, hash_set, uninteresting_patterns, include_
                         skipped_counters['duplicate'] += 1
                         return
                     hash_set.add(content_hash)
-                    filename = build_filename(idx_counter["idx"], url, content)
-                    idx_counter["idx"] += 1
+                    filename = build_filename(url, content)
                     filepath = output_dir / filename
                     with open(filepath, 'wb') as f:
                         f.write(content)
-                    if verbose and idx_counter["idx"] <= 11:
+                    if verbose:
                         log.debug(f"💾 Saved: {filename} ({url})")
-                    elif verbose and idx_counter["idx"] == 12:
-                        log.debug(f"💾 Additional files saved (suppressing further logs)...")
                 except Exception as e:
                     log.error(f"❌ Error downloading {url}: {str(e)}")
 
@@ -164,23 +162,23 @@ async def process_inline_scripts(inline_scripts, js_responses_len, output_dir, h
     Processes and saves eligible inline scripts from the page.
     """
     inline_count = 0
-    for idx, script in enumerate(inline_scripts, js_responses_len + 1):
+    for script in inline_scripts:
         if not is_interesting_inline_script(script, uninteresting_patterns):
-            log.debug(f"⚠️ Skipping uninteresting inline script (index {idx})")
+            log.debug(f"⚠️ Skipping uninteresting inline script")
             skipped_counters['uninteresting'] += 1
             continue
         content = script.encode('utf-8')
         if len(content) < min_size:
-            log.debug(f"⚠️ Skipping small inline script (index {idx})")
+            log.debug(f"⚠️ Skipping small inline script")
             skipped_counters['small'] += 1
             continue
         content_hash = hashlib.sha256(content).hexdigest()
         if content_hash in hash_set:
-            log.debug(f"⚠️ Skipping duplicate inline script (index {idx})")
+            log.debug(f"⚠️ Skipping duplicate inline script")
             skipped_counters['duplicate'] += 1
             continue
         hash_set.add(content_hash)
-        filename = f"{idx:03d}_{domain}_inline_{content_hash[:8]}.js"
+        filename = f"{domain}_inline_{content_hash[:8]}.js"
         filepath = output_dir / filename
         with open(filepath, 'wb') as f:
             f.write(content)
@@ -500,6 +498,10 @@ if __name__ == "__main__":
             
             # Print more helpful troubleshooting info
             if args.verbose:
+                import traceback
+                log.debug("Detailed error information:")
+                log.debug(traceback.format_exc())
+                log.debug("Try using --verbose for more detailed logs")
                 import traceback
                 log.debug("Detailed error information:")
                 log.debug(traceback.format_exc())
