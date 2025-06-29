@@ -24,6 +24,7 @@ from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 import validators
 from urllib.parse import urlparse, urlunparse
+import functools
 
 # ============================= FILTERING LISTS =============================
 # Patterns for filtering out "uninteresting" JavaScript files (e.g., analytics, libraries)
@@ -381,6 +382,25 @@ def log_info_block(msg: str):
     for line in msg.strip().splitlines():
         print(f"║ {line.strip()}")
     print(border + "\n")
+
+def playwright_error_handler(func):
+    """
+    Decorator for centralized Playwright error handling.
+    Logs errors and appends them to an 'errors' list if provided.
+    """
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        log = logging.getLogger(__name__)
+        errors = kwargs.get('errors', None)
+        try:
+            return await func(*args, **kwargs)
+        except Exception as e:
+            msg = f"❌ Playwright error in {func.__name__}: {e}"
+            log.warning(msg)
+            if errors is not None:
+                errors.append(msg)
+            return None
+    return wrapper
 
 if __name__ == "__main__":
     # Argument parsing for CLI usage
