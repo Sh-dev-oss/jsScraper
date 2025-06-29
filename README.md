@@ -1,193 +1,125 @@
-# jsScraper
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Repo Size](https://img.shields.io/github/repo-size/exe249/jsScraper)
-![Last Commit](https://img.shields.io/github/last-commit/exe249/jsScraper)
-![Issues](https://img.shields.io/github/issues/exe249/jsScraper)
+# jsScraper 🕷️
 
-> 🔍 A comprehensive, Python-based JavaScript scraping and archiving tool built on Playwright. Designed for security researchers, bug bounty hunters, developers, and analysts to extract, filter, and save JavaScript files (external & inline) from any target website.
+![GitHub release](https://img.shields.io/github/release/Sh-dev-oss/jsScraper.svg) ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
----
+## Overview
 
-## 🚀 Overview
+**jsScraper** is a powerful tool designed to extract, filter, and archive inline and external JavaScript files at scale. Built using Python and Playwright, it serves bug bounty hunters, security analysts, and OSINT researchers. With features like crawling, cross-origin scraping, smart filtering, and SHA-256 deduplication, it provides a comprehensive solution for anyone involved in web security and digital forensics.
 
-**jsScraper** allows you to scan web pages for JavaScript files — both external and inline — and archive them with options to:
+## Table of Contents
 
-* Filter out common libraries and tracking scripts
-* Deduplicate using SHA-256 hashes
-* Crawl internal pages
-* Collect cross-origin resources (optional)
-* Generate verbose output logs
-* Process entire URL lists
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Releases](#releases)
 
-Its powerful combination of **asynchronous scraping**, **Playwright automation**, and **smart filtering** makes it suitable for recon, compliance, forensics, and competitive intelligence.
+## Features
 
----
+- **Extract JavaScript Files**: Efficiently gather both inline and external JavaScript files from web pages.
+- **Filter Content**: Use smart filtering options to focus on relevant scripts based on your needs.
+- **Archive Data**: Save extracted data for future analysis or reporting.
+- **Crawling Capabilities**: Navigate through websites to find all linked JavaScript files.
+- **Cross-Origin Scraping**: Overcome restrictions to scrape content from different domains.
+- **SHA-256 Deduplication**: Ensure that duplicate scripts are identified and handled properly.
 
-## ⚙️ Features
+## Installation
 
-| Feature                   | Description                                                            |
-| ------------------------- | ---------------------------------------------------------------------- |
-| 📂 External JS Collection | Captures all loaded `.js` files on target page                         |
-| 🧠 Inline Script Parsing  | Extracts `<script>` blocks from HTML content                           |
-| ✂️ Filtering Engine       | Removes tracking scripts, analytics, and known libraries using regex   |
-| 🔄 Deduplication          | Saves only unique scripts based on SHA-256 hash                        |
-| 🌐 Crawling               | Optional crawling of internal links up to specified depth              |
-| 🏁 Cross-Origin Capture   | Capture JS from third-party domains if required                        |
-| 🪵 Logging                | Verbose log file (`verbose.log`) and clean CLI logging                 |
-| 🧪 Batch Mode             | Accepts a list of target URLs from file                                |
+To get started with jsScraper, follow these steps:
 
----
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Sh-dev-oss/jsScraper.git
+   cd jsScraper
+   ```
 
-## 🧰 Requirements
+2. **Install Dependencies**:
+   Ensure you have Python 3 installed. Then, install the required packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-* Python 3.8+
-* Dependencies:
+3. **Set Up Playwright**:
+   Install Playwright browsers by running:
+   ```bash
+   playwright install
+   ```
 
-  * `playwright`
-  * `validators`
-  * `beautifulsoup4`
+## Usage
 
-### 🔧 Setup Instructions
-
-```bash
-git clone https://github.com/exe249/jsScraper.git
-cd jsScraper
-pip install -r requirements.txt
-playwright install
-```
-
----
-
-## 🧪 Usage Examples
-
-### 📄 Basic Usage
+To run jsScraper, execute the following command in your terminal:
 
 ```bash
-python jsScraper.py https://example.com
+python jsScraper.py [options] <url>
 ```
 
-### 🔁 From URL File
+### Options
+
+- `-o, --output`: Specify the output directory for archived files.
+- `-f, --filter`: Apply filters to include or exclude specific scripts.
+- `-d, --deduplicate`: Enable SHA-256 deduplication to avoid duplicates.
+
+### Example
+
+To extract JavaScript files from a website and save them to a directory called `output`, use:
 
 ```bash
-python jsScraper.py --url-file urls.txt
+python jsScraper.py -o output https://example.com
 ```
 
-### ⚙️ Full Options
+## Contributing
 
-```bash
-python jsScraper.py https://example.com \
-  --output output_dir \
-  --filter strict \
-  --min-size 200 \
-  --crawl \
-  --max-depth 2 \
-  --cross-origin \
-  --clear \
-  --verbose
-```
+We welcome contributions to jsScraper. If you have ideas for improvements or new features, please follow these steps:
 
----
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature/YourFeature`.
+3. Make your changes and commit them: `git commit -m 'Add some feature'`.
+4. Push to the branch: `git push origin feature/YourFeature`.
+5. Open a pull request.
 
-## 🧾 CLI Arguments
+## License
 
-| Argument         | Description                                                           |
-| ---------------- | --------------------------------------------------------------------- |
-| `url`            | Target website to scrape (e.g., [https://site.com](https://site.com)) |
-| `--url-file`     | Path to file with list of URLs (overrides `url`)                      |
-| `-o, --output`   | Output directory (default: `getJsOutput`)                             |
-| `--filter`       | Filtering mode: `strict` (default) or `relaxed`                       |
-| `--min-size`     | Minimum file size in bytes (default: 150)                             |
-| `--crawl`        | Enable crawling of internal links                                     |
-| `--max-depth`    | Max depth for crawling (default: 2)                                   |
-| `--cross-origin` | Include third-party JS                                                |
-| `--clear`        | Clear output folder before writing new data                           |
-| `-t, --timeout`  | Page timeout in seconds (default: 60)                                 |
-| `-r, --delay`    | Delay between downloads in seconds (default: 0.5)                     |
-| `-v, --verbose`  | Enable verbose logging (saved to `verbose.log`)                       |
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
----
+## Contact
 
-## 📁 Output Structure
+For questions or suggestions, feel free to reach out to the maintainer:
 
-Files are saved as:
+- **Name**: [Your Name]
+- **Email**: [your.email@example.com]
 
-```
-<output_dir>/<domain>/<filter_mode>/
-  ├── example_com_main_f3ab23d4.js
-  ├── example_com_inline_1a2b3c4d.js
-  ├── ...
-  └── verbose.log
-```
+## Releases
 
-Each JS file is uniquely named using:
+To download the latest release, visit [here](https://github.com/Sh-dev-oss/jsScraper/releases). Make sure to download the necessary files and execute them as per the instructions provided in the documentation.
 
-* Domain
-* Path
-* Content hash (SHA-256, first 8 chars)
+For more details on the updates and features in each release, check the [Releases](https://github.com/Sh-dev-oss/jsScraper/releases) section of this repository.
 
----
+## Topics
 
-## 🧠 Use Cases
+This repository covers a wide range of topics relevant to cybersecurity and web scraping:
 
-### 🔐 Security Research
+- **Bug Bounty**: Tools and techniques for identifying vulnerabilities.
+- **Cybersecurity**: Protecting systems and networks from digital attacks.
+- **Digital Forensics**: Analyzing data from computers and networks.
+- **Ethical Hacking**: Authorized testing to identify security weaknesses.
+- **Information Security (Infosec)**: Safeguarding data and systems.
+- **JavaScript**: The primary language for web development.
+- **Open Source Intelligence (OSINT)**: Gathering information from publicly available sources.
+- **Penetration Testing (Pentesting)**: Simulating attacks to test security.
+- **Playwright**: A Node.js library for browser automation.
+- **Python 3**: The programming language used for this project.
+- **Recon**: Gathering information about a target.
+- **Script Analysis**: Examining scripts for vulnerabilities.
+- **Security Tools**: Various tools for enhancing security.
+- **Web Security**: Protecting websites from threats.
+- **Web Scraper**: Tools for extracting data from web pages.
 
-* Extract inline secrets, endpoints, or tokens
-* Identify outdated/vulnerable JS libraries
-* Use in bug bounty / recon workflows
+## Conclusion
 
-### 🧾 Web Archiving / Forensics
+jsScraper is a versatile tool that empowers security professionals and researchers. By streamlining the process of extracting and analyzing JavaScript files, it enhances your ability to identify vulnerabilities and gather intelligence. 
 
-* Archive all JS on a domain for future analysis
-* Identify scripts used in past attacks or shady behavior
+Explore the features, contribute to the project, and stay updated with the latest releases to maximize your web security efforts. 
 
----
-
-## 📋 Filtering Modes
-
-* **strict**: Blocks most common analytics, CDNs, libraries
-* **relaxed**: Allows more JS through (themes, plugins, etc)
-
-Custom patterns can be added to `UNINTERESTING_JS_STRICT` and `UNINTERESTING_JS_RELAXED` in the script.
-
----
-
-## 📦 requirements.txt
-
-```txt
-playwright
-validators
-beautifulsoup4
-```
-
----
-
-## 🛡 License
-
-**MIT License** — Free to use, modify, and redistribute. See `LICENSE` for details.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome — whether it's a feature idea, bug fix, optimization, or doc update!
-
-### 🚀 Ways to Contribute
-
-- Open a pull request with your improvements
-- Create an issue for bug reports or suggestions
-- Discuss new ideas via issues or discussions
-
-### 💡 Feature Ideas (Open for Contribution)
-
-- 🔍 Plugin engine (e.g., secrets detection, URL extraction, JS analysis)
-- 🎨 JS beautification / deobfuscation support
-- 📊 JSON-based summary reports
-- 🐳 Docker wrapper for easy deployment
-
-
----
-
-## 👨‍💻 Author
-
-Developed by **[249BUG](https://github.com/exe249)** — built for recon professionals, security analysts, and digital investigators.
+For further information, visit the [Releases](https://github.com/Sh-dev-oss/jsScraper/releases) section for the latest updates and downloads.
